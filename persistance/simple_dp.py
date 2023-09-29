@@ -32,6 +32,7 @@ class PortfolioManager:
             json.dump(portfolio, f, indent=4)
 
     def add_stock(self, ticker, shares, price):
+        ticker = ticker.upper()
         portfolio = self._load_portfolio()
         # Check if ticker already exists
         for stock in portfolio["stocks"]:
