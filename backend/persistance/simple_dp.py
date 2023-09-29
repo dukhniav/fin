@@ -1,17 +1,19 @@
 import json
+import os
 
 
 class PortfolioManager:
     def __init__(
         self,
-        portfolio_filename="persistance/portfolio.json",
-        balance_filename="persistance/balances.json",
+        portfolio_filename="backend/persistance/portfolio.json",
+        balance_filename="backend/persistance/balances.json",
     ):
         self.portfolio_filename = portfolio_filename
         self.balance_filename = balance_filename
 
         # Load current portfolio to determine the next ID
         current_portfolio = self._load_portfolio()
+        print(current_portfolio)
         if any(stock["transactions"] for stock in current_portfolio["stocks"]):
             # Start the next ID from the highest ID in the portfolio + 1
             self.next_id = (
@@ -37,19 +39,27 @@ class PortfolioManager:
         with open(self.portfolio_filename, "w") as f:
             json.dump(portfolio, f, indent=4)
 
+    
+
     def _load_balance(self):
         try:
+            absolute_path = os.path.abspath(self.balance_filename)
+            print(f"Trying to open {absolute_path}")
             with open(self.balance_filename, "r") as f:
                 return json.load(f)
         except FileNotFoundError:
+            print("File not found, returning default balance")
             return {"balance": 0.0}  # Default balance
+
 
     def _save_balance(self, balance_data):
         with open(self.balance_filename, "w") as f:
             json.dump(balance_data, f, indent=4)
 
     def view_balance(self):
-        return self._load_balance()["balance"]
+        balance_data = self._load_balance()
+        return balance_data.get("balance", 0.0)
+
 
     def add_stock(self, ticker, shares, price):
         ticker = ticker.upper()
@@ -132,7 +142,3 @@ class PortfolioManager:
             if stock["ticker"] == ticker:
                 return stock
         return None  # Return None if ticker not found in portfolio
-
-
-if __name__ == "__main__":
-    manager = PortfolioManager()

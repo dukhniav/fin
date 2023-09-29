@@ -1,4 +1,4 @@
-from api.yfin import get_news, get_current_price
+from  api.yfin import get_news, get_current_price
 from persistance.simple_dp import PortfolioManager
 
 def main():

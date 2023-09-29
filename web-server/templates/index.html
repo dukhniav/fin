@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Portfolio</title>
+</head>
+<body>
+    <h1>Stock Portfolio</h1>
+    <h2>Balance: ${{ balance }}</h2>
+
+    <h3>Buy Stock</h3>
+    <form action="/buy_stock" method="post">
+        Ticker: <input type="text" name="ticker">
+        Shares: <input type="number" name="shares">
+        <input type="submit" value="Buy">
+    </form>
+
+    <h3>Sell Stock</h3>
+    <form action="/sell_stock" method="post">
+        Ticker: <input type="text" name="ticker">
+        Shares: <input type="number" name="shares">
+        Method: <select name="method">
+            <option value="LIFO">LIFO</option>
+            <option value="FIFO">FIFO</option>
+        </select>
+        <input type="submit" value="Sell">
+    </form>
+
+    <h3>Portfolio</h3>
+    <ul>
+    {% for stock in portfolio["stocks"] %}
+        <li>{{ stock["ticker"] }} - Total Shares: {{ stock["transactions"]|sum(attribute='shares') }}</li>
+    {% endfor %}
+    </ul>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>
