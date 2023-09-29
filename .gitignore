@@ -1,0 +1,5 @@
+.vscode/
+venv/
+portfolio.json
+balances.json
+__pycache__
