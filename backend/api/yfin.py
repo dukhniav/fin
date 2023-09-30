@@ -1,6 +1,12 @@
 import yfinance as yf
 
-
+def check_exists(ticker):
+    try:
+        stock = yf.Ticker(ticker)
+        return True
+    except:
+        return False
+    
 def get_historical_data(ticker, start_date, end_date):
     stock = yf.Ticker(ticker)
     data = stock.history(start=start_date, end=end_date)

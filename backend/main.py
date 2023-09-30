@@ -1,8 +1,9 @@
-from  api.yfin import get_news, get_current_price
 from persistance.simple_dp import PortfolioManager
+from data_interface import DataInterface
 
 def main():
     manager = PortfolioManager()
+    di = DataInterface()
 
     while True:
         print("Menu:")
@@ -11,18 +12,19 @@ def main():
         print("3. Sell stock")
         print("4. View balance")
         print("5. View portfolio")
-        print("6. View specific stock details in portfolio")
-        print("7. Exit")
+        print("6. VIew performance statistics")
+        print("7. View specific stock details in portfolio")
+        print("0. Exit")
         choice = input("Enter your choice: ")
 
         if choice == '1':
             ticker = input("Enter ticker symbol: ").upper()
-            print(f"Current price of {ticker}: ${get_current_price(ticker):.2f}")
+            print(f"Current price of {ticker}: ${di.get_current_price(ticker):.2f}")
 
         elif choice == '2':
             ticker = input("Enter ticker symbol: ").upper()
             shares = int(input("Enter number of shares to buy: "))
-            price = get_current_price(ticker)
+            price = di.get_current_price(ticker)
             print(f"Buying {shares} shares of {ticker} at ${price:.2f} each")
             try:
                 manager.add_stock(ticker, shares, price)
@@ -41,12 +43,22 @@ def main():
         elif choice == '4':
             print(f"Your current balance is: ${manager.view_balance():.2f}")
 
+        # view portfolio
         elif choice == '5':
             portfolio = manager.get_portfolio()
             for stock in portfolio["stocks"]:
                 print(stock["ticker"], "-", sum(transaction["shares"] for transaction in stock["transactions"]), "shares")
 
+        # performance
         elif choice == '6':
+            portfolio = manager.get_portfolio()
+            for stock in portfolio["stocks"]:
+                ticker = stock['ticker']
+                cur_price = di.get_current_price(ticker)
+                shares = sum(transaction['shares'] for transaction in stock['transactions'])
+                print(f'{ticker} ({shares} @ ${cur_price}) - ${shares * cur_price}')
+
+        elif choice == '7':
             ticker = input("Enter ticker symbol to view details: ").upper()
             stock_details = manager.view_stock(ticker)
             if stock_details:
@@ -55,7 +67,7 @@ def main():
             else:
                 print(f"No details found for {ticker}")
 
-        elif choice == '7':
+        elif choice == '0':
             print("Goodbye!")
             break
 
